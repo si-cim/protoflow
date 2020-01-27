@@ -1,0 +1,15 @@
+dist: disco
+language: python
+sudo: false
+cache:
+  directories:
+    - $HOME/.keras
+python:
+  - "3.6"
+  - "3.7"
+
+install:
+  - pip install tox
+
+script:
+  - tox -v -e py
