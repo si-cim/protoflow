@@ -11,9 +11,9 @@ with open('README.md', 'r') as fh:
 
 setup(name='protoflow',
       version='0.0.1',
-      description='''Highly extensible, GPU-supported \
-      Learning Vector Quantization (LVQ) toolbox built using \
-      Tensorflow 2.x and its Keras API.''',
+      description='Highly extensible, GPU-supported '
+      'Learning Vector Quantization (LVQ) toolbox '
+      'built using Tensorflow 2.x and its Keras API.',
       long_description=long_description,
       long_description_content_type='text/markdown',
       author='Jensun Ravichandran',
