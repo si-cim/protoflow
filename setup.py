@@ -3,8 +3,8 @@
 from setuptools import setup
 from setuptools import find_packages
 
-PROJECT_URL = 'https://github.com/theblackfly/protoflow'
-DOWNLOAD_URL = 'https://github.com/theblackfly/protoflow.git'
+PROJECT_URL = 'https://github.com/si-cim/protoflow'
+DOWNLOAD_URL = 'https://github.com/si-cim/protoflow.git'
 
 with open('README.md', 'r') as fh:
     long_description = fh.read()
@@ -22,7 +22,7 @@ setup(name='protoflow',
       download_url=DOWNLOAD_URL,
       license='MIT',
       install_requires=[
-          'tensorflow==2.0.1',
+          'tensorflow>=2.0.1',
           'numpy>=1.9.1',
           'matplotlib',
           'sklearn',
