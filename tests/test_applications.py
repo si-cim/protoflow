@@ -4,7 +4,6 @@ import io
 import unittest
 
 import numpy as np
-
 from protoflow import applications
 
 
@@ -28,16 +27,18 @@ class TestNetwork(unittest.TestCase):
 
 class TestKNN(unittest.TestCase):
     def setUp(self):
-        # yapf: disable
-        self.x = np.array([[0, 0],
-                           [0, 1],
-                           [1, 0],
-                           [1, 1]], dtype='float')
-        self.y = np.array([0,
-                           0,
-                           0,
-                           1], dtype='int')
-        # yapf: enable
+        self.x = np.array([
+            [0, 0],
+            [0, 1],
+            [1, 0],
+            [1, 1],
+        ], dtype='float')
+        self.y = np.array([
+            0,
+            0,
+            0,
+            1,
+        ], dtype='int')
 
     def test_object_init(self):
         clf = applications.KNN(k=99)
