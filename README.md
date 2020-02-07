@@ -3,6 +3,8 @@
 ProtoFlow is a TensorFlow-based Python toolbox for bleeding-edge research in prototype-based machine learning algorithms.
 
 ![Tests](https://github.com/si-cim/protoflow/workflows/Tests/badge.svg?branch=master)
+[![Documentation Status](https://readthedocs.org/projects/protoflow/badge/?version=latest)](https://protoflow.readthedocs.io/en/latest/?badge=latest)
+
 
 ## Description
 
