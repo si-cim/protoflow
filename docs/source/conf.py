@@ -88,7 +88,7 @@ autodoc_inherit_docstrings = False
 # https://sphinx-themes.org/
 html_theme = 'sphinx_rtd_theme'
 
-html_logo = '_static/img/ProtoFlow-logo.png'
+html_logo = '_static/img/ProtoFlow-logo-inverse.png'
 
 tf_orange = '#FF6F00'
 html_theme_options = {
@@ -96,7 +96,7 @@ html_theme_options = {
     'display_version': True,
     'prev_next_buttons_location': 'bottom',
     'style_external_links': False,
-    'style_nav_header_background': 'white',
+    'style_nav_header_background': '#0A3A5C',
     # Toc options
     'collapse_navigation': True,
     'sticky_navigation': True,
