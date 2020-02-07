@@ -10,11 +10,11 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('../../'))
+import os
+import sys
+sys.path.insert(0, os.path.abspath('../../'))
 
-import protoflow as pf
+#from protoflow import __version__ as package_version
 import sphinx_rtd_theme
 
 # -- Project information -----------------------------------------------------
@@ -25,7 +25,7 @@ author = 'Jensun Ravichandran'
 
 # The full version, including alpha/beta/rc tags
 #
-release = pf.__version__
+#release = package_version
 
 # -- General configuration ---------------------------------------------------
 
@@ -88,15 +88,15 @@ autodoc_inherit_docstrings = False
 # https://sphinx-themes.org/
 html_theme = 'sphinx_rtd_theme'
 
-html_logo = '_static/img/ProtoFlow-logo.png'
+html_logo = '_static/img/ProtoFlow-logo-inverse.png'
 
-tf_orange = '#ffa800'
+tf_orange = '#FF6F00'
 html_theme_options = {
     'logo_only': True,
     'display_version': True,
     'prev_next_buttons_location': 'bottom',
     'style_external_links': False,
-    'style_nav_header_background': 'white',
+    'style_nav_header_background': '#0A3A5C',
     # Toc options
     'collapse_navigation': True,
     'sticky_navigation': True,
