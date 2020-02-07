@@ -14,7 +14,7 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('../../'))
 
-import protoflow as pf
+from protoflow import __version__ as package_version
 import sphinx_rtd_theme
 
 # -- Project information -----------------------------------------------------
@@ -25,7 +25,7 @@ author = 'Jensun Ravichandran'
 
 # The full version, including alpha/beta/rc tags
 #
-release = pf.__version__
+release = package_version
 
 # -- General configuration ---------------------------------------------------
 
