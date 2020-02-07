@@ -3,15 +3,9 @@
 ProtoFlow API
 =====================================
 
-Network
+Applications
 ------------------------------
-.. automodule:: protoflow.architectures.network
-   :members:
-   :undoc-members:
-
-Architectures
-------------------------------
-.. automodule:: protoflow.architectures
+.. automodule:: protoflow.applications
    :members:
    :undoc-members:
 

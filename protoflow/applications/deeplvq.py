@@ -42,8 +42,8 @@ class DeepLVQ(GLVQ):
                              f'hidden_units, but '
                              f'{len(layer_activations)} layer_activations.')
         if len(hidden_units) != len(kernel_initializers):
-            raise ValueError(f'You provided {len(hidden_units)} '
-                             f'hidden_layer_sizes, but '
+            raise ValueError(f'You provided {len(hidden_units)} ',
+                             f'hidden_layer_sizes, but ',
                              f'{len(layer_activations)} layer_activations.')
         self.layer_activations = [
             activations.get(a) for a in layer_activations
