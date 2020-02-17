@@ -4,10 +4,14 @@ import tensorflow as tf
 
 
 class WTAC(tf.keras.layers.Layer):
-    """Winner-Takes-All Competition"""
+    """Winner-Takes-All Competition.
+
+    Arguments:
+        prototype_labels: (list), class labels of the prototypes.
+    """
     def __init__(self, prototype_labels, **kwargs):
         self.prototype_labels = prototype_labels
-        super(WTAC, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def call(self, x):
         neg_distances = tf.negative(x)
@@ -28,14 +32,18 @@ class WTAC(tf.keras.layers.Layer):
 
 
 class KNNC(tf.keras.layers.Layer):
-    """K-Nearest-Neighbors Competition"""
+    """K-Nearest-Neighbors Competition.
+
+    Arguments:
+        oh_prototype_labels: (list), one-hot class labels of the prototypes.
+    """
     def __init__(self, k, oh_prototype_labels, **kwargs):
         self.k = k
 
-        # One-Hot prototype labels
+        # One-hot prototype labels
         self.oh_prototype_labels = oh_prototype_labels
 
-        super(KNNC, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def call(self, x):
         neg_distances = tf.negative(x)
