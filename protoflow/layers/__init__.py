@@ -1,5 +1,5 @@
 from .competitions import KNNC, WTAC
-from .distances import (Distance, EuclideanDistance, LpNormDistance,
+from .distances import (SED, Distance, EuclideanDistance, LpNormDistance,
                         ManhattanDistance, MatrixDistance,
                         MatrixEuclideanDistance, OmegaDistance,
                         SquaredEuclideanDistance)
@@ -15,6 +15,7 @@ __all__ = [
     'MatrixDistance',
     'MatrixEuclideanDistance',
     'OmegaDistance',
+    'SED',
     'SquaredEuclideanDistance',
     'WTAC',
 ]

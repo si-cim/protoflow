@@ -159,6 +159,8 @@ PROTOTYPE_INITIALIZERS = {
 
 # Aliases
 eye = EYE = Eye
+rand = RandomUniform
+randn = RandomNormal
 
 
 def serialize(initializer):
