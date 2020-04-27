@@ -10,7 +10,7 @@ from protoflow.experimental.callbacks import VisPointProtos
 
 # Set hyperparameters
 BATCH_SIZE = 8
-EPOCHS = 10
+EPOCHS = 100
 LR = 0.01
 
 # Prepare and preprocess the data
@@ -39,18 +39,21 @@ dvis = VisPointProtos(
     resolution=50,
     cmap='plasma',
     pause_time=0.1,
-    show=False,
+    show=True,
     save=False,
-    snap=True,
+    snap=False,
     make_gif=False,
-    make_mp4=True,
+    make_mp4=False,
 )
 
 # Train with the visualization callback to observe the learning
 clf.fit(x_train,
         y_train,
         verbose=True,
-        callbacks=[es, dvis],
+        callbacks=[
+            es,
+            dvis,
+        ],
         epochs=EPOCHS,
         lr=LR,
         batch_size=BATCH_SIZE)
