@@ -27,6 +27,10 @@ ProtoFlow can be installed using `pip`.
 pip install protoflow
 ```
 
+## Documentation
+
+The documentation is available at https://protoflow.readthedocs.io/en/latest/
+
 ## Usage
 
 ProtoFlow is modular. It is very easy to use the modular pieces provided by
