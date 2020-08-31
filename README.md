@@ -42,6 +42,10 @@ cd prototorch
 pip install -e .
 ```
 
+## Documentation
+
+The documentation is available at https://protoflow.readthedocs.io/en/latest/
+
 ## Usage
 
 ProtoFlow is modular. It is very easy to use the modular pieces provided by
