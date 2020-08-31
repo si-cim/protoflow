@@ -13,7 +13,7 @@ class TestDistances(unittest.TestCase):
 
     def test_manhattan(self):
         d = layers.ManhattanDistance(num_of_prototypes=3,
-                                     prototype_dim=2,
+                                     input_dim=2,
                                      prototype_labels=[0, 1, 2],
                                      prototype_initializer='ones')
         # yapf: disable
@@ -28,7 +28,7 @@ class TestDistances(unittest.TestCase):
 
     def test_euclidean(self):
         d = layers.EuclideanDistance(num_of_prototypes=3,
-                                     prototype_dim=2,
+                                     input_dim=2,
                                      prototype_labels=[0, 1, 2],
                                      prototype_initializer='ones')
         # yapf: disable
@@ -43,7 +43,7 @@ class TestDistances(unittest.TestCase):
 
     def test_squared_euclidean(self):
         d = layers.SquaredEuclideanDistance(num_of_prototypes=3,
-                                            prototype_dim=2,
+                                            input_dim=2,
                                             prototype_labels=[0, 1, 2],
                                             prototype_initializer='ones')
         # yapf: disable
