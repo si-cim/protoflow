@@ -4,6 +4,7 @@ from .distances import (SED, Distance, EuclideanDistance, LpNormDistance,
                         MatrixEuclideanDistance, OmegaDistance,
                         SquaredEuclideanDistance)
 from .products import LpSIP
+from .prototypes import Prototypes1D
 
 __all__ = [
     'Distance',
@@ -15,6 +16,7 @@ __all__ = [
     'MatrixDistance',
     'MatrixEuclideanDistance',
     'OmegaDistance',
+    'Prototypes1D',
     'SED',
     'SquaredEuclideanDistance',
     'WTAC',
