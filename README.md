@@ -2,9 +2,13 @@
 
 ProtoFlow is a TensorFlow-based Python toolbox for bleeding-edge research in prototype-based machine learning algorithms.
 
-![Tests](https://github.com/si-cim/protoflow/workflows/Tests/badge.svg?branch=master)
-[![Documentation Status](https://readthedocs.org/projects/protoflow/badge/?version=latest)](https://protoflow.readthedocs.io/en/latest/?badge=latest)
+![tests](https://github.com/si-cim/protoflow/workflows/tests/badge.svg)
+[![docs](https://readthedocs.org/projects/protoflow/badge/?version=latest)](https://protoflow.readthedocs.io/en/latest/?badge=latest)
+[![PyPI](https://img.shields.io/pypi/v/protoflow)](https://pypi.org/project/protoflow/)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/protoflow?color=blue)
+[![GitHub license](https://img.shields.io/github/license/si-cim/protoflow)](https://github.com/si-cim/protoflow/blob/master/LICENSE)
 
+*PyTorch users, please see:* [ProtoTorch](https://github.com/si-cim/prototorch)
 
 ## Description
 
@@ -22,9 +26,20 @@ using the Keras API.
 
 ## Installation
 
-ProtoFlow can be installed using `pip`.
+ProtoFlow can be easily installed using `pip`.
 ```
-pip install protoflow
+pip install -U protoflow
+```
+To also install the extras, use
+```bash
+pip install -U protoflow[examples,other,tests]
+```
+To install the bleeding-edge features and improvements:
+```bash
+git clone https://github.com/si-cim/prototorch.git
+git checkout dev
+cd prototorch
+pip install -e .
 ```
 
 ## Usage
@@ -39,3 +54,16 @@ ProtoFlow comes prepackaged with many popular LVQ algorithms in a convenient API
 with more algorithms and techniques coming soon. If you would simply like to be
 able to use those algorithms to train large ML models on a GPU, ProtoFlow lets
 you do this without requiring a black-belt in high-performance Tensor computation.
+
+## Bibtex
+
+If you would like to cite the package, please use this:
+```bibtex
+@misc{Ravichandran2020a,
+  author = {Ravichandran, J},
+  title = {ProtoFlow},
+  year = {2020},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/si-cim/protoflow}}
+}
