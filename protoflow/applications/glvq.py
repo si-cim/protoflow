@@ -137,7 +137,7 @@ class GLVQ(Network):
         )
         self.distance = layers.SquaredEuclideanDistance(
             num_of_prototypes=np.sum(self.prototype_distribution),
-            prototype_dim=x_train.shape[1],
+            input_dim=x_train.shape[1],
             prototype_labels=prototype_labels,
             prototype_initializer=prototype_initializer,
             dtype=self.dtype,

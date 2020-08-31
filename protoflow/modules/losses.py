@@ -21,32 +21,21 @@ class GLVQLoss(tf.keras.losses.Loss):
         self.beta = beta
         super().__init__(**kwargs)
 
-    def call(self, y_true, dists):
-        distances = tf.expand_dims(dists, axis=1)
-        matcher = tf.equal(tf.expand_dims(y_true, axis=1),
-                           self.prototype_labels)
-        not_matcher = tf.logical_not(matcher)
+    def call(self, y_true, distances):
+        y_true = tf.cast(y_true, distances.dtype)
+        matching = tf.equal(y_true, self.prototype_labels)
+        unmatching = tf.logical_not(matching)
 
-        # Ragged-Tensors are required to support non-uniform prototype
-        # distributions
-        distances_to_wpluses = tf.ragged.boolean_mask(distances, matcher)
-        distances_to_wminuses = tf.ragged.boolean_mask(distances, not_matcher)
-        neg_distances_to_wpluses = tf.negative(distances_to_wpluses)
-        neg_distances_to_wminuses = tf.negative(distances_to_wminuses)
+        inf = tf.constant(float('inf'))
+        d_matching = tf.where(matching, distances, inf)
+        d_unmatching = tf.where(unmatching, distances, inf)
+        dp = tf.keras.backend.min(d_matching, axis=1, keepdims=True)
+        dm = tf.keras.backend.min(d_unmatching, axis=1, keepdims=True)
 
-        # Convert Ragged-Tensors back to normal Tensors:
-        neg_distances_to_wpluses = neg_distances_to_wpluses.to_tensor(
-            default_value=-tf.constant(float('inf')))
-        neg_distances_to_wminuses = neg_distances_to_wminuses.to_tensor(
-            default_value=-tf.constant(float('inf')))
+        mu = (dp - dm) / (dp + dm)
 
-        dpluses, _ = tf.nn.top_k(neg_distances_to_wpluses, k=1)
-        dminuses, _ = tf.nn.top_k(neg_distances_to_wminuses, k=1)
-        classifier = tf.math.divide(dpluses - dminuses, dpluses + dminuses)
-
-        batch_loss = self.squashing(classifier, beta=self.beta)
-        loss = batch_loss
-        return loss
+        batch_loss = self.squashing(mu, beta=self.beta)
+        return batch_loss
 
     def get_config(self):
         base_config = super().get_config()

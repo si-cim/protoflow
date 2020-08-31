@@ -11,11 +11,9 @@ class Distance(tf.keras.layers.Layer):
 
     Arguments:
         num_of_prototypes: Positive integer, number of prototypes.
-        prototype_dim: Positive integer, dimension of the prototype vectors.
         prototype_labels: (list), class labels the prototype vectors.
 
     Keyword arguments:
-        use_bias: Boolean, whether the layer uses a bias vector.
         prototype_initializer: Initializer for the `prototype` weights matrix
             (see [initializers](../modules/initializers.md)).
         prototype_regularizer: Regularizer function applied to
@@ -27,7 +25,6 @@ class Distance(tf.keras.layers.Layer):
     """
     def __init__(self,
                  num_of_prototypes,
-                 prototype_dim,
                  prototype_labels,
                  prototype_initializer='zeros',
                  prototype_regularizer=None,
@@ -41,7 +38,6 @@ class Distance(tf.keras.layers.Layer):
         super().__init__(dtype=dtype, **kwargs)
 
         self.num_of_prototypes = num_of_prototypes
-        self.prototype_dim = prototype_dim
         self.prototype_labels = prototype_labels
         self.prototype_initializer = initializers.get(prototype_initializer)
         self.prototype_regularizer = regularizers.get(prototype_regularizer)
@@ -49,9 +45,10 @@ class Distance(tf.keras.layers.Layer):
         self.trainable_prototypes = trainable_prototypes
 
     def build(self, input_shape):
+        prototype_dim = input_shape[1]
         self.prototypes = self.add_weight(
             name='prototypes',
-            shape=(self.num_of_prototypes, self.prototype_dim),
+            shape=(self.num_of_prototypes, prototype_dim),
             dtype=self.dtype,
             initializer=self.prototype_initializer,
             regularizer=self.prototype_regularizer,
@@ -72,7 +69,6 @@ class Distance(tf.keras.layers.Layer):
         base_config = super().get_config()
         config = {
             'num_of_prototypes': self.num_of_prototypes,
-            'prototype_dim': self.prototype_dim,
             'prototype_labels': self.prototype_labels,
             'prototype_initializer': prototype_initializer,
             'prototype_regularizer': prototype_regularizer,
@@ -109,10 +105,8 @@ class EuclideanDistance(Distance):
 
 
 class LpNormDistance(Distance):
-    def __init__(self, p, num_of_prototypes, prototype_dim, prototype_labels,
-                 **kwargs):
-        super().__init__(num_of_prototypes, prototype_dim, prototype_labels,
-                         **kwargs)
+    def __init__(self, p, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.p = p
 
     def call(self, x):
@@ -134,21 +128,25 @@ class MatrixEuclideanDistance(Distance):
 
     Supports localized matrices via 'local' `matrix_scope`.
 
+    Keyword arguments:
+        mapping_dim: (int) Optionally learn a limited rank matrix.
+            Default None.
+
     Returns:
         tensorflow.Tensor: distances
     """
     def __init__(self,
                  num_of_prototypes,
-                 prototype_dim,
                  prototype_labels,
+                 mapping_dim,
                  trainable_matrix=True,
                  matrix_scope='global',
-                 matrix_initializer='eye',
+                 matrix_initializer='rand',
                  matrix_regularizer=None,
                  matrix_constraint=None,
                  **kwargs):
-        super().__init__(num_of_prototypes, prototype_dim, prototype_labels,
-                         **kwargs)
+        super().__init__(num_of_prototypes, prototype_labels, **kwargs)
+        self.mapping_dim = mapping_dim
         self.trainable_matrix = trainable_matrix
         self.matrix_scope = matrix_scope
         self.matrix_initializer = initializers.get(matrix_initializer)
@@ -156,11 +154,13 @@ class MatrixEuclideanDistance(Distance):
         self.matrix_constraint = constraints.get(matrix_constraint)
 
     def build(self, input_shape):
+        if not self.mapping_dim:
+            self.mapping_dim = input_shape[1]
         if self.matrix_scope == 'global':
-            omega_shape = (input_shape[1], input_shape[1])
+            omega_shape = (input_shape[1], self.mapping_dim)
         if self.matrix_scope == 'local':
             omega_shape = (self.num_of_prototypes, input_shape[1],
-                           input_shape[1])
+                           self.mapping_dim)
 
         self.omega = self.add_weight(name=f'{self.matrix_scope}_omega',
                                      shape=omega_shape,
@@ -184,6 +184,7 @@ class MatrixEuclideanDistance(Distance):
         matrix_constraint = constraints.serialize(self.matrix_constraint)
         base_config = super().get_config()
         config = {
+            'mapping_dim': self.mapping_dim,
             'trainable_matrix': self.trainable_matrix,
             'matrix_scope ': self.matrix_scope,
             'matrix_initializer': matrix_initializer,
@@ -208,3 +209,4 @@ class SquaredEuclideanDistance(EuclideanDistance):
 
 # Aliases
 OmegaDistance = MatrixDistance = MatrixEuclideanDistance
+SED = SquaredEuclideanDistance
