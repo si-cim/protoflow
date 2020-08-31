@@ -101,7 +101,8 @@ class GMLVQ(GLVQ):
         matrix_initializer = modules.initializers.get(matrix_initializer)
         self.distance = layers.OmegaDistance(
             num_of_prototypes=np.sum(self.prototype_distribution),
-            prototype_dim=x_train.shape[1],
+            input_dim=x_train.shape[1],
+            mapping_dim=x_train.shape[1],
             prototype_labels=prototype_labels,
             prototype_initializer=prototype_initializer,
             matrix_initializer=matrix_initializer,

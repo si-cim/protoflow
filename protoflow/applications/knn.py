@@ -25,9 +25,8 @@ class KNN(Network):
         # Define layers
         self.distance = layers.SquaredEuclideanDistance(
             num_of_prototypes=x_train.shape[0],
-            prototype_dim=x_train.shape[1],
-            prototype_labels=y_train,
             input_dim=x_train.shape[1],
+            prototype_labels=y_train,
             name='eucl_dist')
         self.knnc = layers.KNNC(k=self.k, oh_prototype_labels=y_train)
 
