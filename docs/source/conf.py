@@ -87,14 +87,14 @@ autodoc_inherit_docstrings = False
 # https://sphinx-themes.org/
 html_theme = 'sphinx_rtd_theme'
 
-html_logo = '_static/img/horizontal-lockup.png'
+html_logo = './_static/img/ProtoFlow-logo.png'
 
 html_theme_options = {
     'logo_only': True,
     'display_version': True,
     'prev_next_buttons_location': 'bottom',
     'style_external_links': False,
-    'style_nav_header_background': '#ffffff',
+    'style_nav_header_background': '#0A3A5C',
     # Toc options
     'collapse_navigation': True,
     'sticky_navigation': True,
