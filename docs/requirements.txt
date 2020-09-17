@@ -1,4 +1,1 @@
-tensorflow==2.0.1
-numpy>=1.9.1
-matplotlib
-sklearn
+sphinxcontrib-katex==0.6.1
