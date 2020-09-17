@@ -14,7 +14,6 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('../../'))
 
-#from protoflow import __version__ as package_version
 import sphinx_rtd_theme
 
 # -- Project information -----------------------------------------------------
@@ -25,7 +24,7 @@ author = 'Jensun Ravichandran'
 
 # The full version, including alpha/beta/rc tags
 #
-#release = package_version
+release = '0.1.1'
 
 # -- General configuration ---------------------------------------------------
 
@@ -45,10 +44,10 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
-    'sphinx.ext.mathjax',
+    # 'sphinx.ext.mathjax',
     'sphinx_rtd_theme',
     # 'sphinx.ext.githubpages'
-    # 'sphinxcontrib.katex',
+    'sphinxcontrib.katex',
 ]
 
 # katex_prerender = True
@@ -88,15 +87,14 @@ autodoc_inherit_docstrings = False
 # https://sphinx-themes.org/
 html_theme = 'sphinx_rtd_theme'
 
-html_logo = '_static/img/ProtoFlow-logo-inverse.png'
+html_logo = '_static/img/horizontal-lockup.png'
 
-tf_orange = '#FF6F00'
 html_theme_options = {
     'logo_only': True,
     'display_version': True,
     'prev_next_buttons_location': 'bottom',
     'style_external_links': False,
-    'style_nav_header_background': '#0A3A5C',
+    'style_nav_header_background': '#ffffff',
     # Toc options
     'collapse_navigation': True,
     'sticky_navigation': True,

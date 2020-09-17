@@ -35,6 +35,11 @@ setup(name='protoflow',
               'imageio',
           ],
           'tests': ['pytest'],
+          'docs': [
+              'sphinx',
+              'sphinx_rtd_theme',
+              'sphinxcontrib-katex',
+          ],
       },
       classifiers=[
           'Development Status :: 2 - Pre-Alpha', 'Environment :: Console',
