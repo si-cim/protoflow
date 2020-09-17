@@ -1,3 +1,8 @@
+# Release 0.2.0
+
+This release is meant to prepare for the upcoming breaking changes in the next
+0.3.0 release, which will essentially be a backwards-incompatible fork.
+
 # Release 0.1.0
 
 ## Bug Fixes
