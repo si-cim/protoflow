@@ -24,7 +24,7 @@ author = 'Jensun Ravichandran'
 
 # The full version, including alpha/beta/rc tags
 #
-release = '0.2.0'
+release = '0.3.0'
 
 # -- General configuration ---------------------------------------------------
 
@@ -44,9 +44,7 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
-    # 'sphinx.ext.mathjax',
     'sphinx_rtd_theme',
-    # 'sphinx.ext.githubpages'
     'sphinxcontrib.katex',
 ]
 

@@ -7,59 +7,6 @@ import numpy as np
 from protoflow import layers
 
 
-class TestDistances(unittest.TestCase):
-    def setUp(self):
-        pass
-
-    def test_manhattan(self):
-        d = layers.ManhattanDistance(num_of_prototypes=3,
-                                     input_dim=2,
-                                     prototype_labels=[0, 1, 2],
-                                     prototype_initializer='ones')
-        # yapf: disable
-        x = np.array([[0, 0],
-                      [1, 1]], dtype='float32')
-        actual = d(x)
-        desired = np.array([[2.0000, 2.0000, 2.0000],
-                            [0.0000, 0.0000, 0.0000]])
-        # yapf: enable
-        self.assertIsNone(
-            np.testing.assert_array_almost_equal(actual, desired, decimal=5))
-
-    def test_euclidean(self):
-        d = layers.EuclideanDistance(num_of_prototypes=3,
-                                     input_dim=2,
-                                     prototype_labels=[0, 1, 2],
-                                     prototype_initializer='ones')
-        # yapf: disable
-        x = np.array([[0, 0],
-                      [1, 1]], dtype='float32')
-        actual = d(x)
-        desired = np.array([[1.4142, 1.4142, 1.4142],
-                            [0.0000, 0.0000, 0.0000]])
-        # yapf: enable
-        self.assertIsNone(
-            np.testing.assert_array_almost_equal(actual, desired, decimal=5))
-
-    def test_squared_euclidean(self):
-        d = layers.SquaredEuclideanDistance(num_of_prototypes=3,
-                                            input_dim=2,
-                                            prototype_labels=[0, 1, 2],
-                                            prototype_initializer='ones')
-        # yapf: disable
-        x = np.array([[0, 0],
-                      [1, 1]], dtype='float32')
-        actual = d(x)
-        desired = np.array([[1.4142, 1.4142, 1.4142],
-                            [0.0000, 0.0000, 0.0000]]) ** 2
-        # yapf: enable
-        self.assertIsNone(
-            np.testing.assert_array_almost_equal(actual, desired, decimal=4))
-
-    def tearDown(self):
-        pass
-
-
 class TestCompetitions(unittest.TestCase):
     def setUp(self):
         pass

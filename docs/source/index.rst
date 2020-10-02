@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to ProtoFlow's documentation!
-=====================================
+ProtoFlow Documentation
+=======================
 
 .. toctree::
    :hidden:
@@ -14,12 +14,10 @@ Welcome to ProtoFlow's documentation!
    self
    api
 
-
 ProtoFlow is a TensorFlow-based Python toolbox for bleeding-edge
 research in prototype-based machine learning algorithms.
 
-Indices and tables
-==================
+Indices
+=======
 * :ref:`genindex`
 * :ref:`modindex`
-* :ref:`search`

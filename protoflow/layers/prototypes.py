@@ -3,34 +3,46 @@
 import itertools
 
 import tensorflow as tf
+
 from protoflow.modules import initializers
 
 
-class Prototypes1D(tf.keras.layers.Layer):
-    """Point Prototypes."""
+class _Prototypes(tf.keras.layers.Layer):
+    """Base class for Prototype layers in ProtoFlow."""
     def __init__(self,
-                 prototypes_per_class=1,
                  nclasses=None,
+                 prototypes_per_class=1,
                  prototype_initializer='zeros',
                  trainable_prototypes=True,
-                 dtype='float32',
                  **kwargs):
         if 'input_shape' not in kwargs and 'input_dim' in kwargs:
-            kwargs['input_shape'] = (kwargs.pop('input_dim'), )
-        super().__init__(dtype=dtype, **kwargs)
+            kwargs['input_shape'] = [kwargs.pop('input_dim')]
+        super().__init__(**kwargs)
 
         self.num_of_prototypes = prototypes_per_class * nclasses
         self.prototype_distribution = [prototypes_per_class] * nclasses
         self.prototype_initializer = initializers.get(prototype_initializer)
         self.trainable_prototypes = trainable_prototypes
+        self.prototypes = None
+        self.prototype_labels = None
 
+    def get_config(self):
+        base_config = super().get_config()
+        config = {
+            'prototype_distribution': self.prototype_distribution,
+            'trainable_prototypes': self.trainable_prototypes,
+        }
+        return {**base_config, **config}
+
+
+class Prototypes1D(_Prototypes):
+    """Point Prototypes."""
     def build(self, input_shape):
         # Make a label list and flatten the list of lists using itertools
-        llist = [[i] * n
-                 for i, n in zip(range(len(self.prototype_distribution)),
-                                 self.prototype_distribution)]
-        flat_llist = list(itertools.chain(*llist))
-        self.prototype_labels = tf.Variable(initial_value=flat_llist,
+        pdist = self.prototype_distribution
+        label_list = [[i] * n for i, n in zip(range(len(pdist)), pdist)]
+        plabels = list(itertools.chain(*label_list))
+        self.prototype_labels = tf.Variable(initial_value=plabels,
                                             dtype=self.dtype,
                                             trainable=False)
         self.prototypes = self.add_weight(
@@ -41,16 +53,5 @@ class Prototypes1D(tf.keras.layers.Layer):
             trainable=self.trainable_prototypes)
         super().build(input_shape)
 
-    def call(self, x):
+    def call(self, inputs, **kwargs):
         return self.prototypes
-
-    def get_config(self):
-        prototype_initializer = initializers.get(self.prototype_initializer)
-        base_config = super().get_config()
-        config = {
-            'num_of_prototypes': self.num_of_prototypes,
-            'prototype_labels': self.prototype_labels,
-            'prototype_initializer': prototype_initializer,
-            'trainable_prototypes': self.trainable_prototypes,
-        }
-        return {**base_config, **config}

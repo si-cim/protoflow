@@ -1,6 +1,7 @@
-from .callbacks import LossHistory, TerminateOnProtosNaN
+from .callbacks import TerminateOnProtosNaN
+from .visualization import VisPointProtos
 
 __all__ = [
-    'LossHistory',
     'TerminateOnProtosNaN',
+    'VisPointProtos',
 ]

@@ -1,3 +1,7 @@
-from . import tecator
+from . import flc1, tecator, whisky
 
-__all__ = ['tecator']
+__all__ = [
+    "flc1",
+    "tecator",
+    "whisky",
+]

@@ -1,15 +1,33 @@
-dist: disco
-language: python
+dist: bionic
 sudo: false
+language: python
+python: 3.8
 cache:
   directories:
-    - $HOME/.keras
-python:
-  - "3.6"
-  - "3.7"
-
+  - "./tests/artifacts"
+  - "$HOME/.keras"
 install:
-  - pip install tox
+- pip install . --progress-bar off
+- pip install -r requirements.txt
 
+# Generate code coverage report
 script:
-  - tox -v -e py
+- coverage run -m pytest
+
+# Push the results to codecov
+after_success:
+- bash <(curl -s https://codecov.io/bash)
+deploy:
+  provider: pypi
+  username: __token__
+  password:
+    secure: dtUHSjBG1x5g6ZTrb6PsD6rDB0EXlJNecEHYR5USDNIXfdL9Rf/COOOT8JhpFNb2U8n8OwkunW1GcktD8KKd4ORYYZ1/zodaWY4TKz955soKKsqOiJGO46J+NZ4T8vM31ZjStdh1KsIx+fbReh3EKto6qhvvT3Hv4M7yzdOhLwLCJqqY2vqhaIhJom0tgTxOm6ZbvGod4gF2GJ7jDMmLKqQC1sxZZrOtTxT9/ksxHvfnEgGyhQywXHMr3vP7upA4qIOg4HEcA40HwcRj3Iiw+wyqhG1gxUUMQuHLBM/jurSNJrKWgzvU1l24f0iuyWiOfmyzjJqEkkF7qCEs0dOZJAlY/cJLnURZYP3tiDrYb6ujq/SvTCSu+ITgtDABf2nEE8e6kL6D5EVnsbCQ37I5E6C6++RSxzbNki4WCjBmOEQKdr28VJPMk/hR1a/WYb8u2cZkeevWTeQ4zYitg84Z0O7CG3SpcjxeLUKStYvqJoMLNTKK3fWJUA93seB+DB5CHeKYnbg1azTGcm8XWOwZtugsj7YaKOgpn95xrtDlrWWkgepaKRDmDNwx+4NODEKpqopfVwNZZFqQ6RXd2XkcqTBPWvr0m9VG9VrN+KYA0kbykNNXXlTsWuvGo80mdE+7vHIOlBJCrYuHmipiv1FRr1ofreO0UhADgVwbI9hJ5AY=
+  on:
+  tags: true
+  skip_existing: true
+
+# The password is encrypted with:
+# `cd protoflow && travis encrypt your-pypi-api-token --add deploy.password`
+# See https://docs.travis-ci.com/user/deployment/pypi and
+# https://github.com/travis-ci/travis.rb#installation
+# for more details

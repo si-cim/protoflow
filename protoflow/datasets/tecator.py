@@ -40,19 +40,18 @@ import numpy as np
 from tensorflow.keras.utils import get_file
 
 
-def load_data(fname='tecator.npz'):
+def load_data(path='tecator.npz'):
     """Loads the Tecator dataset.
 
     # Arguments
         path: path where to cache the dataset locally
-            (relative to ~/.keras/datasets).
+            (relative to ~/.keras/datasets/).
 
     # Returns
-        Tuple of Numpy arrays: `x_train, y_train`.
+        Tuple of Numpy arrays: `x_train, y_train, x_test, y_test`.
     """
-    path = get_file(fname,
-                    origin='http://tiny.cc/anysma_datasets_tecator',
-                    file_hash='7b12e6d01131abc468224907e8718fa0')
+    path = get_file(path, origin='http://tiny.cc/pfds_tecator')
     with np.load(path, allow_pickle=False) as f:
         x_train, y_train = f['x_train'], f['y_train']
-    return x_train, y_train
+        x_test, y_test = f['x_test'], f['y_test']
+    return (x_train, y_train), (x_test, y_test)

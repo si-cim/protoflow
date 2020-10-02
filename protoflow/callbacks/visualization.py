@@ -1,5 +1,3 @@
-"""ProtoFlow experimental callbacks: called during model training."""
-
 import os
 
 import numpy as np
@@ -9,7 +7,8 @@ from matplotlib.offsetbox import AnchoredText
 
 from protoflow.utils.celluloid import Camera
 from protoflow.utils.colors import color_scheme
-from protoflow.utils.utils import gif_from_dir, make_directory, prettify_string
+from protoflow.utils.utils import (gif_from_dir, make_directory,
+                                   prettify_string, writelog)
 
 
 class VisWeights(tf.keras.callbacks.Callback):
@@ -174,8 +173,9 @@ class VisPointProtos(VisWeights):
     .. TODO::
         Still in Progress.
     """
-    def __init__(self, **kwargs):
+    def __init__(self, prototype_layer, **kwargs):
         super().__init__(**kwargs)
+        self.prototype_layer = prototype_layer
         self.title = 'Point Prototypes Visualization'
         self.data_scatter_settings = {
             'marker': 'o',
@@ -196,8 +196,8 @@ class VisPointProtos(VisWeights):
 
         self._clean_and_setup_ax()
 
-        protos = self.model.distance.prototypes.numpy()
-        labels = self.model.distance.prototype_labels
+        protos = self.prototype_layer.prototypes.numpy()
+        labels = self.model.distance.prototype_labels.numpy()
 
         if self.project_protos:
             protos = self.model.projection(protos).numpy()
@@ -208,12 +208,11 @@ class VisPointProtos(VisWeights):
         # TODO Get rid of the assumption y values in [0, num_of_classes]
         label_colors = [color_map[l] for l in labels]
 
-        if self.data.any():
-            x = self.data[:, :-1]
-            y = self.data[:, -1]
+        if self.data is not None:
+            x, y = self.data
             # TODO Get rid of the assumption y values in [0, num_of_classes]
             y_colors = [color_map[l] for l in y]
-            x = self.model.projection(x)
+            # x = self.model.projection(x)
             if not isinstance(x, np.ndarray):
                 x = x.numpy()
 
@@ -234,8 +233,8 @@ class VisPointProtos(VisWeights):
                 y_min, y_max = y_min - border, y_max + border
                 try:
                     xx, yy = np.meshgrid(
-                        np.arange(x_min, x_max, 1.0 / resolution),
-                        np.arange(y_min, y_max, 1.0 / resolution))
+                        np.arange(x_min, x_max, (x_max - x_min) / resolution),
+                        np.arange(y_min, y_max, (x_max - x_min) / resolution))
                 except ValueError as ve:
                     print(ve)
                     raise ValueError(f'x_min: {x_min}, x_max: {x_max}. '
@@ -249,7 +248,7 @@ class VisPointProtos(VisWeights):
                 # Predict mesh labels.
                 if self.project_mesh:
                     mesh_input = self.model.projection(mesh_input)
-                d = self.model.distance(mesh_input)
+                d = self.model.predict(mesh_input)
                 y_pred = self.model.competition(d).numpy()
                 y_pred = y_pred.reshape(xx.shape)
 
@@ -269,191 +268,4 @@ class VisPointProtos(VisWeights):
 
     def on_epoch_end(self, epoch, logs={}):
         self._display_logs(self.ax, epoch, logs)
-        self._show_and_save(epoch)
-
-
-class VisFuncProtos(VisWeights):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.title = 'Functional Prototypes Visualization'
-
-    def on_train_begin(self, logs={}):
-        self.fig, self.ax = plt.subplots(1, 2)
-        self.camera = Camera(self.fig)
-        # Hook the distance layer to the model under model.distance.
-        self.model.distance = self.model.layers[self.distance_layer_index]
-
-    def on_epoch_begin(self, epoch, logs={}):
-        if self._skip_epoch(epoch):
-            return True
-
-        # Plot prototypes on axis 1.
-        ax = self.ax[0]
-        if not self.snap:
-            ax.cla()
-        ax.set_title('Functional Data Visualization')
-        if self.data.any():
-            x = self.data[:, :-1]
-            y = self.data[:, -1]
-            labels = self.model.prototype_labels
-            color_map = color_scheme(n=len(set(labels)),
-                                     cmap=self.cmap,
-                                     zero_indexed=True)
-            y_colors = [color_map[l] for l in y]
-            x = self.model.projection(x)
-            if not isinstance(x, np.ndarray):
-                x = x.numpy()
-
-            # Plot data points.
-            for xi, ci in zip(x, y_colors):
-                ax.plot(xi, c=ci, linewidth=1)
-
-        # Plot prototypes on axis 2.
-        ax = self.ax[1]
-        if not self.snap:
-            ax.cla()
-        ax.set_title(self.title)
-
-        protos = self.model.prototypes
-        if self.project_protos:
-            protos = self.model.projection(protos)
-        labels = self.model.prototype_labels
-        color_map = color_scheme(n=len(set(labels)),
-                                 cmap=self.cmap,
-                                 zero_indexed=True)
-        # TODO Get rid of the assumption y values in [0, num_of_classes]
-        label_colors = [color_map[l] for l in labels]
-
-        # Plot prototypes.
-        for p, c in zip(protos, label_colors):
-            ax.plot(p, c=c, linewidth=1)
-
-        self._show_and_save(epoch)
-
-
-class VisMatrix(VisWeights):
-    """Abstract class meant to be subclassed."""
-    def on_epoch_begin(self, epoch, logs={}):
-        pass
-
-    def on_epoch_end(self, epoch, logs={}):
-        self._display_logs(self.ax, epoch, logs)
-        self._show_and_save(epoch)
-
-
-class VisOmegaMatrix(VisMatrix):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.title = 'Omega Matrix Visualization'
-        self.display_logs_settings = dict(loc='lower left')
-
-    def on_epoch_begin(self, epoch, logs={}):
-        if self._skip_epoch(epoch):
-            return True
-        self._clean_and_setup_ax()
-        omega = self.model.distance.omega.numpy()
-        self.ax.imshow(omega)
-        # self._show_and_save(epoch)
-
-
-class VisLambdaMatrix(VisMatrix):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.title = 'Lambda Matrix Visualization'
-
-    def on_epoch_begin(self, epoch, logs={}):
-        if self._skip_epoch(epoch):
-            return True
-        self._clean_and_setup_ax()
-        omega = self.model.distance.omega.numpy()
-        lam = omega.dot(omega.T)
-        self.ax.imshow(lam)
-        self._show_and_save(epoch)
-
-
-class VisImgProtos(VisWeights):
-    """Visualizazion of prototypes, interpreted as images.
-
-    Arguments:
-        imshape (list(int)): Image dimensions of a prototype.
-
-    Keyword Arguments:
-        columns (int) : Number of columns.
-        project_protos (bool) : Use Projection of the model for visualization.
-        cmap (str) : Colormap for visualization.
-        pause_time (float) : Pause after epoch visualization.
-        interval (int) : If not None, only visualize after interval epochs.
-        label_map (list[str]) : List of labelnames.
-
-    .. TODO::
-        Still in Progress.
-    """
-    def __init__(self, imshape, num_of_prototypes, columns=5, **kwargs):
-        super().__init__(**kwargs)
-        self.title = 'Image Prototypes Visualization'
-        self.imshape = imshape
-        self.num_of_prototypes = num_of_prototypes
-        self.columns = columns
-
-    def _mute_imshow_ticks(self, ax):
-        """Hide x and y ticks when displaying images with
-        matplotlib's imshow.
-
-        Reference:
-        https://stackoverflow.com/questions/29988241/python-hide-ticks-but-show-tick-labels
-        """
-        plt.setp(ax.get_xticklabels(), visible=False)
-        plt.setp(ax.get_yticklabels(), visible=False)
-        ax.tick_params(axis='both', which='both', length=0)
-
-    def on_train_begin(self, logs={}):
-        num_of_protos = self.num_of_prototypes
-        self.rows = int(num_of_protos / self.columns)
-        self.fig, self.ax = plt.subplots(self.rows, self.columns)
-        self.camera = Camera(self.fig)
-        # Hook the distance layer to the model under model.distance.
-        self.model.distance = self.model.layers[self.distance_layer_index]
-
-    def on_epoch_begin(self, epoch, logs={}):
-        if self._skip_epoch(epoch):
-            return True
-
-        axes = self.ax
-
-        if hasattr(self.model, 'prototypes'):
-            protos = self.model.prototypes
-        else:
-            protos = self.model.distance.prototypes.numpy()
-        if self.project_protos:
-            protos = self.model.projection(protos).numpy()
-        labels = self.model.distance.prototype_labels
-
-        counter = -1
-        for i in range(self.rows):
-            for j in range(self.columns):
-                counter += 1
-                img = protos[counter].reshape(self.imshape)
-                # title = f'Label: {labels[counter]}'
-                title = f'{labels[counter]}'
-                try:
-                    if not self.snap:
-                        axes[i, j].cla()
-                    if self.label_map:
-                        axes[i, j].set_title(
-                            f'{self.label_map[labels[counter]]}')
-                    else:
-                        axes[i, j].set_title(title)
-                    axes[i, j].imshow(img, cmap=self.cmap)
-                    self._mute_imshow_ticks(axes[i, j])
-                except IndexError:
-                    if not self.snap:
-                        axes[counter].cla()
-                    if self.label_map:
-                        axes[counter].set_title(
-                            f'{self.label_map[labels[counter]]}')
-                    else:
-                        axes[counter].set_title(title)
-                    axes[counter].imshow(img, cmap=self.cmap)
-                    self._mute_imshow_ticks(axes[counter])
-
         self._show_and_save(epoch)

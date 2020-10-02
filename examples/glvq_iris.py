@@ -1,63 +1,42 @@
-"""Fit a GLVQ model to the Iris dataset."""
+"""Fit a GLVQ model to the Iris dataset.
 
-import numpy as np
+If you're having trouble running this example script on Windows, remove the
+visualization callback.
+"""
+
 import tensorflow as tf
 from sklearn.datasets import load_iris
-from sklearn.preprocessing import StandardScaler
 
-from protoflow.applications import GLVQ
-from protoflow.experimental.callbacks import VisPointProtos
-
-# Set hyperparameters
-BATCH_SIZE = 8
-EPOCHS = 100
-LR = 0.01
+import protoflow as pf
+from protoflow.callbacks import VisPointProtos
 
 # Prepare and preprocess the data
-scaler = StandardScaler()
-x_train, y_train = load_iris(True)
-x_train = x_train[:, [0, 2]].astype('float')
-y_train = y_train.astype('int')
-scaler.fit(x_train)
-x_train = scaler.transform(x_train)
+x_train, y_train = load_iris(return_X_y=True)
+x_train = x_train[:, [0, 2]]
 
-clf = GLVQ(prototypes_per_class=1)
+# Build the model
+model = pf.applications.GLVQ(nclasses=len(set(y_train)),
+                             input_dim=x_train.shape[-1],
+                             prototypes_per_class=1)
+
+# Print summary
+model.summary()
+
+# Compile the model
+model.compile(optimizer=tf.keras.optimizers.Adam(0.1))
 
 # Callbacks
-es = tf.keras.callbacks.EarlyStopping(
-    monitor='loss',
-    mode='min',
-    patience=5,
-    restore_best_weights=True,
-)
-dvis = VisPointProtos(
-    data=np.c_[x_train, y_train],
-    voronoi=True,
-    project_mesh=False,
-    project_protos=False,
-    border=0.3,
-    resolution=50,
-    cmap='plasma',
-    pause_time=0.1,
-    show=True,
-    save=False,
-    snap=False,
-    make_gif=False,
-    make_mp4=False,
-)
+dvis = VisPointProtos(prototype_layer=model.prototype_layer,
+                      data=(x_train, y_train),
+                      snap=False,
+                      voronoi=True,
+                      resolution=50,
+                      pause_time=0.1)
 
 # Train with the visualization callback to observe the learning
-clf.fit(x_train,
-        y_train,
-        verbose=True,
-        callbacks=[
-            es,
-            dvis,
-        ],
-        epochs=EPOCHS,
-        lr=LR,
-        batch_size=BATCH_SIZE)
-
-# Accuracy
-print('Training accuracy after training:')
-clf.score(x_train, y_train, verbose=True)
+model.fit(x_train,
+          y_train,
+          verbose=True,
+          callbacks=[dvis],
+          epochs=200,
+          batch_size=32)
