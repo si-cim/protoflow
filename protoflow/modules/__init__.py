@@ -1,6 +1,5 @@
-from .initializers import (PROTOTYPE_INITIALIZERS, Eye,
-                           get_classwise_mean_initializer,
-                           get_classwise_random_initializer)
+from .constraints import OmegaNormalization
+from .initializers import Eye
 from .losses import GLVQLoss
 from .metrics import accuracy_score, wtac_accuracy
 from .regularizers import LogDeterminant, OmegaRegularizer
@@ -10,9 +9,7 @@ __all__ = [
     'GLVQLoss',
     'LogDeterminant',
     'OmegaRegularizer',
-    'PROTOTYPE_INITIALIZERS',
+    'OmegaNormalization',
     'accuracy_score',
-    'get_classwise_mean_initializer',
-    'get_classwise_random_initializer',
     'wtac_accuracy',
 ]
