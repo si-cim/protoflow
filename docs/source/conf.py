@@ -44,9 +44,7 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
-    # 'sphinx.ext.mathjax',
     'sphinx_rtd_theme',
-    # 'sphinx.ext.githubpages'
     'sphinxcontrib.katex',
 ]
 
