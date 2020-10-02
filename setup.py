@@ -22,7 +22,7 @@ setup(name='protoflow',
       download_url=DOWNLOAD_URL,
       license='MIT',
       install_requires=[
-          'tensorflow>=2.2.0',
+          'tensorflow>=2.3.1',
           'numpy>=1.9.1',
           'sklearn',
       ],
