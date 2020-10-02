@@ -12,13 +12,15 @@ from protoflow.functions import activations
 class GLVQLoss(tf.keras.losses.Loss):
     """Loss function based on Prototypes."""
     def __init__(self,
-                 prototype_labels=None,
+                 prototype_labels,
                  squashing='beta_sigmoid',
                  beta=20,
+                 minimize_dp=False,
                  **kwargs):
         self.prototype_labels = prototype_labels
         self.squashing = activations.get(squashing)
         self.beta = beta
+        self.minimize_dp = minimize_dp
         super().__init__(**kwargs)
 
     def call(self, y_true, distances):
@@ -35,7 +37,12 @@ class GLVQLoss(tf.keras.losses.Loss):
         mu = (dp - dm) / (dp + dm)
 
         batch_loss = self.squashing(mu, beta=self.beta)
-        return batch_loss
+
+        reg_term = 0
+        if self.minimize_dp:
+            reg_term = dp
+
+        return batch_loss + reg_term
 
     def get_config(self):
         base_config = super().get_config()
