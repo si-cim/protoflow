@@ -10,7 +10,7 @@ with open('README.md', 'r') as fh:
     long_description = fh.read()
 
 setup(name='protoflow',
-      version='0.3.0',
+      version='0.3.1',
       description='Highly extensible, GPU-supported '
       'Learning Vector Quantization (LVQ) toolbox '
       'built using Tensorflow 2.x and its Keras API.',
@@ -42,8 +42,10 @@ setup(name='protoflow',
           ],
       },
       classifiers=[
-          'Development Status :: 2 - Pre-Alpha', 'Environment :: Console',
-          'Intended Audience :: Developers', 'Intended Audience :: Education',
+          'Development Status :: 3 - Alpha',
+          'Environment :: Console',
+          'Intended Audience :: Developers',
+          'Intended Audience :: Education',
           'Intended Audience :: Science/Research',
           'License :: OSI Approved :: MIT License',
           'Programming Language :: Python :: 3.6',
