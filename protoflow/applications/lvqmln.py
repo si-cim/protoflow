@@ -9,7 +9,7 @@ class LVQMLN(DeepLVQ):
     LVQMLN is a DeepLVQ with a single projection(hidden) layer.
 
     Arguments:
-        projection_dim (int): Dimension of the space the input is projected to.
+        mapping_dim (int): Dimension of the space the input is mapped to.
 
     Keyword Arguments:
         prototypes_per_class (int): Number of prototypes in each class.
@@ -18,22 +18,13 @@ class LVQMLN(DeepLVQ):
             (default 'sigmoid')
     """
     def __init__(self,
-                 projection_dim,
-                 prototypes_per_class=1,
-                 activation='sigmoid',
+                 nclasses,
+                 input_dim,
+                 mapping_dim,
+                 activation="sigmoid",
                  **kwargs):
-        super().__init__([projection_dim],
-                         prototypes_per_class,
+        super().__init__(nclasses,
+                         input_dim, [mapping_dim],
                          layer_activations=[activation],
                          **kwargs)
-        self.projection_dim = projection_dim
-
-    @property
-    def omega(self):
-        """Get the weights of the projection layer.
-
-        Returns:
-            numpy.ndarray: projection weights.
-        """
-        omega = self.projections[0].get_weights()[0]
-        return omega
+        self.mapping_dim = mapping_dim

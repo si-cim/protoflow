@@ -1,18 +1,19 @@
-"""Module to build, train and evaluate GMLVQ models with Keras."""
+"""Build and train GMLVQ models with tf.keras."""
 
-import numpy as np
 import tensorflow as tf
 
-from protoflow import layers, modules
-from protoflow.applications.glvq import GLVQ
+import protoflow as pf
+
+from .glvq import _GLVQ
 
 
-class GMLVQ(GLVQ):
-    """Generalized Matrix Learning Vector Quantization (GMLVQ) [ScBH09]_
+class GMLVQ(_GLVQ):
+    """Generalized Matrix Learning Vector Quantization (GMLVQ) [schneider2009]_
 
-    GMLVQ is an extention of GRLVQ.
+    GMLVQ is a generalization of GRLVQ. Restricting the :math:`\\Omega` matrix
+    to only contain non-zero values in the main diagonal yields GRLVQ.
 
-    By introducing a Matrix into the distance measure with
+    The distance measure in GMLVQ is taken as:
 
     .. math::
         d^\\Lambda (\\omega, \\xi) =
@@ -24,16 +25,42 @@ class GMLVQ(GLVQ):
         \\Lambda = \\Omega^T \\Omega
 
     it can be guaranteed that :math:`\\Lambda` is symmetric.
-
-    During learning, GMLVQ applies updates the prototypes and the
-    :math:`\\Omega` matrix. The matrix :math:`\\Lambda` can be interpreted
-    as relevance matrix.
-
-    .. TODO::
-        Check this explanation.
     """
-    def __init__(self, prototypes_per_class=1, **kwargs):
-        super().__init__(prototypes_per_class, **kwargs)
+    def __init__(self,
+                 nclasses,
+                 input_dim,
+                 mapping_dim=None,
+                 prototypes_per_class=1,
+                 prototype_initializer="zeros",
+                 matrix_initializer="glorot_uniform",
+                 matrix_constraint=pf.modules.constraints.TraceNormalization(),
+                 trainable_prototypes=True,
+                 prototypes_dtype="float32",
+                 distance_fn=pf.functions.distances.euclidean_distance,
+                 **kwargs):
+        super().__init__(**kwargs)
+
+        if mapping_dim is None:
+            mapping_dim = input_dim
+
+        self.mapping_layer = tf.keras.layers.Dense(
+            units=mapping_dim,
+            activation=None,
+            use_bias=False,
+            kernel_initializer=matrix_initializer,
+            # kernel_constraint=matrix_constraint,
+            input_dim=input_dim,
+        )
+        self.prototype_layer = pf.layers.Prototypes1D(
+            nclasses=nclasses,
+            prototypes_per_class=prototypes_per_class,
+            prototype_initializer=prototype_initializer,
+            trainable_prototypes=trainable_prototypes,
+            dtype=prototypes_dtype,
+        )
+        self.distance_fn = distance_fn
+
+        self.build(input_shape=(None, input_dim))
 
     @property
     def omega(self):
@@ -42,90 +69,12 @@ class GMLVQ(GLVQ):
         Returns:
             numpy.ndarray: Omega matrix
         """
-        omega = self.distance.omega.numpy()
+        omega = self.mapping_layer.get_weights()[0]
         return omega
 
-    def build(self,
-              x_train,
-              y_train,
-              custom_prototypes=None,
-              prototype_initializer='mean',
-              matrix_initializer='eye'):
-        """Initialize prototypes and build the Layers.
-
-        Arguments:
-            x_train : Training inputs.
-            y_train : Training targets.
-
-        Keyword Arguments:
-            custom_prototypes (array-like) : Distance layer is reinitialized
-                with this. Ignored if None. (default: None)
-            prototype_initializer (str) : Method to use to set the initial
-                prototype locations. (default: 'mean')
-            matrix_initializer (str) : Method to use to set the initial
-                :math:`\\Omega` matrix. (default: 'eye')
-        """
-        self._check_validity(x_train, y_train)
-
-        # Compute initial prototype locations.
-        classlabels = np.unique(y_train)
-        self.num_classes = classlabels.size
-        if not self.prototype_distribution:
-            self.prototype_distribution = [self.prototypes_per_class
-                                           ] * self.num_classes
-        else:
-            self._check_prototype_distribution()
-
-        if prototype_initializer in modules.PROTOTYPE_INITIALIZERS:
-            init_getter = modules.PROTOTYPE_INITIALIZERS[prototype_initializer]
-            prototype_initializer = init_getter(x_train, y_train,
-                                                self.prototype_distribution,
-                                                self.verbose)
-        else:
-            prototype_initializer = modules.initializers.get(
-                prototype_initializer)
-        prototype_labels = np.empty(shape=(0, ), dtype=y_train.dtype)
-        for label, num in zip(classlabels, self.prototype_distribution):
-            prototype_labels = np.append(prototype_labels, [label] * num)
-
-        # Define layers.
-        self.projection = tf.keras.layers.Dense(
-            x_train.shape[1],
-            use_bias=False,
-            input_shape=(x_train.shape[1], ),
-            dtype=self.dtype,
-            kernel_initializer='identity',
-            trainable=False,
-            name='proj',
-        )
-        matrix_initializer = modules.initializers.get(matrix_initializer)
-        self.distance = layers.OmegaDistance(
-            num_of_prototypes=np.sum(self.prototype_distribution),
-            input_dim=x_train.shape[1],
-            mapping_dim=x_train.shape[1],
-            prototype_labels=prototype_labels,
-            prototype_initializer=prototype_initializer,
-            matrix_initializer=matrix_initializer,
-            matrix_regularizer=modules.OmegaRegularizer(alpha=0.005),
-            dtype=self.dtype,
-            name='omega',
-        )
-        self.competition = layers.WTAC(
-            prototype_labels=prototype_labels,
-            dtype=self.dtype,
-            name='wtac',
-        )
-
-        # Build model
-        self.model = tf.keras.models.Sequential(
-            [self.projection, self.distance])
-
-        if custom_prototypes is not None:
-            self.set_prototypes(custom_prototypes)
-
-        # Hook the layers to the model under names used by the callbacks
-        self.model.projection = self.projection
-        self.model.competition = self.competition
-        self.model.distance = self.distance
-
-        self.built = True
+    def call(self, inputs):
+        protos = self.prototype_layer(inputs)
+        mapped_inputs = self.mapping_layer(inputs)
+        mapped_protos = self.mapping_layer(protos)
+        distances = self.distance_fn(mapped_inputs, mapped_protos)
+        return distances
