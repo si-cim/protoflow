@@ -87,7 +87,7 @@ autodoc_inherit_docstrings = False
 # https://sphinx-themes.org/
 html_theme = 'sphinx_rtd_theme'
 
-html_logo = './_static/img/ProtoFlow-logo.png'
+html_logo = './_static/img/ProtoFlow-logo-inverse.png'
 
 html_theme_options = {
     'logo_only': True,
