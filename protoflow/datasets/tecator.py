@@ -37,10 +37,10 @@ Description:
 """
 
 import numpy as np
-from tensorflow.keras.utils import get_file
+from protoflow.utils.data import get_file_from_google
 
 
-def load_data(path='tecator.npz'):
+def load_data(path="tecator.npz"):
     """Loads the Tecator dataset.
 
     # Arguments
@@ -50,8 +50,13 @@ def load_data(path='tecator.npz'):
     # Returns
         Tuple of Numpy arrays: `x_train, y_train, x_test, y_test`.
     """
-    path = get_file(path, origin='http://tiny.cc/pfds_tecator')
+    path = get_file_from_google(
+        path,
+        file_id="1P9WIYnyxFPh6f1vqAbnKfK8oYmUgyV83",
+        md5_hash="ba5607c580d0f91bb27dc29d13c2f8df",
+        extract=False,
+    )
     with np.load(path, allow_pickle=False) as f:
-        x_train, y_train = f['x_train'], f['y_train']
-        x_test, y_test = f['x_test'], f['y_test']
+        x_train, y_train = f["x_train"], f["y_train"]
+        x_test, y_test = f["x_test"], f["y_test"]
     return (x_train, y_train), (x_test, y_test)
