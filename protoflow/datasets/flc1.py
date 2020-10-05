@@ -4,7 +4,7 @@ import numpy as np
 from protoflow.utils.data import get_file_from_google
 
 
-def load_data(path='flc1.npz'):
+def load_data(path="flc1.npz"):
     """Loads the Whisky dataset.
 
     # Arguments
@@ -21,6 +21,6 @@ def load_data(path='flc1.npz'):
         extract=False,
     )
     with np.load(path, allow_pickle=False) as f:
-        x_train, y_train = f['x_train'], f['y_train']
-        x_test, y_test = f['x_test'], f['y_test']
+        x_train, y_train = f["x_train"], f["y_train"]
+        x_test, y_test = f["x_test"], f["y_test"]
     return (x_train, y_train), (x_test, y_test)
