@@ -172,3 +172,9 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/", None),
     "numpy": ("https://docs.scipy.org/doc/numpy/", None),
 }
+
+# -- Options for Epub output ----------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-epub-output
+
+epub_cover = ()
+version = release
