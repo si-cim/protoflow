@@ -24,21 +24,19 @@ setup(name="protoflow",
       license="MIT",
       install_requires=[
           "tensorflow>=2.3.1",
-          "numpy>=1.9.1",
-          "scikit-learn>=0.17",
+          "scikit-learn>=0.23.2",
           "matplotlib>=3.3.2",
+          "requests>=2.24.0",
+          "tqdm>=4.51.0",
       ],
       extras_require={
-          "datasets": [
-              "requests",
-              "tqdm",
-          ],
           "docs": [
               "recommonmark",
               "sphinx",
               "sphinx_rtd_theme",
               "sphinxcontrib-katex",
           ],
+          "gpu": ["tensorflow-gpu"],
           "others": [
               "xlrd",
               "pandas",

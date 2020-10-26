@@ -28,14 +28,19 @@ pip install -U protoflow
 ```
 To also install the extras, run
 ```bash
-pip install -U protoflow[datasets,docs,others,tests]
+pip install -U protoflow[docs,others,tests]
 ```
 To install the bleeding-edge features and improvements before they are release on PyPI, run
 ```bash
 git clone https://github.com/si-cim/protoflow.git
 git checkout dev
 cd protoflow
-pip install -e .[datasets,docs,others,tests]
+pip install -e .[docs,others,tests]
+```
+
+For gpu support, run
+```bash
+pip install -U protoflow[gpu]
 ```
 
 ## Documentation
