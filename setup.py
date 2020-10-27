@@ -3,7 +3,7 @@
 from setuptools import setup
 from setuptools import find_packages
 
-VERSION = "0.3.3"
+VERSION = "0.3.4"
 PROJECT_URL = "https://github.com/si-cim/protoflow"
 DOWNLOAD_URL = "{}/releases/tag/v{}".format(PROJECT_URL, VERSION)
 
