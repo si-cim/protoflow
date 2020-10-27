@@ -25,7 +25,7 @@ class WTAC(tf.keras.layers.Layer):
     def get_config(self):
         base_config = super(WTAC, self).get_config()
         config = {
-            'prototype_labels': self.prototype_labels,
+            "prototype_labels": self.prototype_labels,
         }
         return {**base_config, **config}
 
@@ -55,6 +55,6 @@ class KNNC(tf.keras.layers.Layer):
         base_config = super(KNNC, self).get_config()
         config = {
             'k': self.k,
-            'oh_prototype_labels': self.oh_prototype_labels,
+            "oh_prototype_labels": self.oh_prototype_labels,
         }
         return {**base_config, **config}
