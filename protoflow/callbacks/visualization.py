@@ -16,6 +16,7 @@ class VisWeights(tf.keras.callbacks.Callback):
     def __init__(
             self,
             data=None,
+            ignore_last_output_row=False,
             label_map=None,
             project_mesh=False,
             project_protos=False,
@@ -43,6 +44,7 @@ class VisWeights(tf.keras.callbacks.Callback):
             **kwargs):
         super().__init__(**kwargs)
         self.data = data
+        self.ignore_last_output_row = ignore_last_output_row
         self.label_map = label_map
         self.voronoi = voronoi
         self.axis_off = True
@@ -248,7 +250,13 @@ class VisPointProtos(VisWeights):
                 # Predict mesh labels.
                 if self.project_mesh:
                     mesh_input = self.model.projection(mesh_input)
-                d = self.model.predict(mesh_input)
+
+                # d = self.model(mesh_input)  # WRONG! doesn't stop gradients
+                d = self.model.predict(mesh_input, batch_size=len(mesh_input))
+                # d = self.model.predict(mesh_input,
+                #                        batch_size=mesh_input.shape[0])
+                if self.ignore_last_output_row:
+                    d = d[:-1]
                 y_pred = self.model.competition(d).numpy()
                 y_pred = y_pred.reshape(xx.shape)
 

@@ -17,6 +17,8 @@ script:
 # Push the results to codecov
 after_success:
 - bash <(curl -s https://codecov.io/bash)
+
+# Publish on PyPI
 deploy:
   provider: pypi
   username: __token__

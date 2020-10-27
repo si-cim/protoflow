@@ -3,12 +3,12 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-ProtoFlow Documentation
-=======================
+About ProtoFlow
+===============
 
 .. toctree::
    :hidden:
-   :maxdepth: 4
+   :maxdepth: 3
    :caption: Contents:
 
    self

@@ -12,36 +12,48 @@ from tensorflow.keras.utils import (deserialize_keras_object,
 
 class Eye(tf.keras.initializers.Initializer):
     """Initializer that sets the weights to identity matrix(ces)."""
-    def __call__(self, shape, dtype='float32'):
+    def __call__(self, shape, dtype="float32"):
         if len(shape) == 2:  # like in global omega for example
             if shape[0] != shape[1]:  # channels first
-                raise ValueError(f'Matrix shape {shape} is not square.')
+                raise ValueError(f"Matrix shape {shape} is not square.")
             return tf.eye(shape[0], dtype=dtype)
         elif len(shape) == 3:  # like in local omega for example
             if shape[1] != shape[2]:  # channels first
-                raise ValueError(f'Sub-tensors {shape[1]}x{shape[2]} '
-                                 'are not square.')
+                raise ValueError(f"Sub-tensors {shape[1]}x{shape[2]} "
+                                 "are not square.")
             return tf.stack([tf.eye(shape[1], dtype=dtype)] * shape[0])
         else:
-            raise ValueError('Eye initializer can only be used '
-                             'for 2D matrices or 3D tensors. '
-                             'You requested a {len(shape)}D tensor.')
+            raise ValueError("Eye initializer can only be used "
+                             "for 2D matrices or 3D tensors. "
+                             "You requested a {len(shape)}D tensor.")
 
 
 class _ProtoInit(tf.keras.initializers.Initializer):
-    """Base class for ProtoFlow Initializers."""
-    def __init__(self, x_train, y_train, prototype_distribution):
+    """Base class for ProtoFlow Initializers.
+
+    Use `epsilon` to offset the data if initializing prototypes
+    exactly on a data point causes training instability due to
+    zero distances.
+    """
+    def __init__(self,
+                 x_train,
+                 y_train,
+                 prototype_distribution,
+                 epsilon=1e-2,
+                 **kwargs):
         if not isinstance(x_train, np.ndarray):
-            raise TypeError('Expecting a numpy ndarray for '
-                            f'inputs `x_train`. '
-                            f'You provided: {type(x_train)}.')
+            raise TypeError("Expecting a numpy ndarray for "
+                            f"inputs `x_train`. "
+                            f"You provided: {type(x_train)}.")
         if not isinstance(y_train, np.ndarray):
-            raise TypeError('Expecting a numpy ndarray for '
-                            f'targets `y_train`. '
-                            f'You provided: {type(y_train)}.')
+            raise TypeError("Expecting a numpy ndarray for "
+                            f"targets `y_train`. "
+                            f"You provided: {type(y_train)}.")
         self.x_train = x_train
         self.y_train = y_train
         self.prototype_distribution = prototype_distribution
+        self.epsilon = float(epsilon)
+        super().__init__(**kwargs)
 
     def instantiate(self, dtype="float32"):
         if not isinstance(dtype, str):
@@ -80,12 +92,12 @@ class StratifiedMean(_ProtoInit):
 
 
 class StratifiedRandom(_ProtoInit):
-    def __call__(self, shape, dtype='float32'):
-        """Sample data means by class."""
+    def __call__(self, shape, dtype="float32"):
+        """Randomly sample data points depending on their labels."""
         self.instantiate(dtype=dtype)
         for label, num in zip(self.unique_labels, self.prototype_distribution):
-            x_label = self.x_train[self.y_train == label]
-            indices = list(range(x_label.shape[0]))
+            x_where_label = self.x_train[self.y_train == label]
+            indices = list(range(x_where_label.shape[0]))
             replace = False
             if num >= len(indices):
                 warnings.warn(f"Sampling more prototypes "
@@ -95,8 +107,11 @@ class StratifiedRandom(_ProtoInit):
             chosen_indices = np.random.choice(indices,
                                               size=num,
                                               replace=replace)
+            chosen_data = x_where_label[chosen_indices]
+            random_offset = self.epsilon * np.random.choice(
+                [-1, 1], size=chosen_data.shape)
             self.prototypes = np.append(self.prototypes,
-                                        x_label[chosen_indices],
+                                        chosen_data + random_offset,
                                         axis=0)
             self.prototype_labels = np.append(self.prototype_labels,
                                               [label] * num)

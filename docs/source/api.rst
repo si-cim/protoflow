@@ -1,6 +1,6 @@
-.. ProtoFlow API Documentation
+.. ProtoFlow API Reference
 
-ProtoFlow API
+ProtoFlow API Reference
 ======================================
 
 Applications

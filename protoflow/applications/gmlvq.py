@@ -3,6 +3,7 @@
 import tensorflow as tf
 
 import protoflow as pf
+from protoflow.modules import constraints
 
 from .glvq import _GLVQ
 
@@ -33,7 +34,7 @@ class GMLVQ(_GLVQ):
                  prototypes_per_class=1,
                  prototype_initializer="zeros",
                  matrix_initializer="glorot_uniform",
-                 matrix_constraint=pf.modules.constraints.TraceNormalization(),
+                 matrix_constraint=constraints.TraceNormalization(),
                  trainable_prototypes=True,
                  prototypes_dtype="float32",
                  distance_fn=pf.functions.distances.euclidean_distance,
@@ -48,7 +49,7 @@ class GMLVQ(_GLVQ):
             activation=None,
             use_bias=False,
             kernel_initializer=matrix_initializer,
-            # kernel_constraint=matrix_constraint,
+            kernel_constraint=matrix_constraint,
             input_dim=input_dim,
         )
         self.prototype_layer = pf.layers.Prototypes1D(

@@ -22,25 +22,31 @@ extensibility and speed.
 
 ## Installation
 
-ProtoFlow can be easily installed using `pip`.
+ProtoFlow can be easily installed using `pip`. To install the latest version, run
 ```
 pip install -U protoflow
 ```
-To also install the extras, use
+To also install the extras, run
 ```bash
-pip install -U protoflow[examples,other,tests,docs]
+pip install -U protoflow[docs,others,tests]
 ```
-To install the bleeding-edge features and improvements:
+To install the bleeding-edge features and improvements before they are release on PyPI, run
 ```bash
-git clone https://github.com/si-cim/prototorch.git
+git clone https://github.com/si-cim/protoflow.git
 git checkout dev
-cd prototorch
-pip install -e .
+cd protoflow
+pip install -e .[docs,others,tests]
+```
+
+For gpu support, run
+```bash
+pip install -U protoflow[gpu]
 ```
 
 ## Documentation
 
-The documentation is available at https://protoflow.readthedocs.io/en/latest/
+The documentation is available at <https://www.protoflow.ml/en/latest/>. Should
+that link not work try <https://protoflow.readthedocs.io/en/latest/>.
 
 ## Usage
 

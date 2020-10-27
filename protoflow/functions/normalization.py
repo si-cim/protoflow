@@ -1,69 +1,33 @@
 """ProtoFlow normalization functions."""
 
 import tensorflow as tf
-from tensorflow.keras import backend as K
-
-from .linalg import trace
 
 
-def orthogonalization(tensors):
-    """Perform orthogonalization via polar decomposition."""
-    def mixed_shape(inputs):
-        if not K.is_tensor(inputs):
-            raise ValueError('Input must be a tensor.')
-        with K.name_scope('mixed_shape'):
-            int_shape = list(K.int_shape(inputs))
-            # sometimes int_shape returns mixed integer types
-            int_shape = [int(i) if i is not None else i for i in int_shape]
-            tensor_shape = K.shape(inputs)
+def trace_normalization(mat, epsilon=1e-7):
+    """Normalize the matrix such that the trace is close to 1.
 
-            for i, s in enumerate(int_shape):
-                if s is None:
-                    int_shape[i] = tensor_shape[i]
-            return tuple(int_shape)
-
-    with K.name_scope('orthogonalization'):
-        _, u, v = tf.svd(tensors, full_matrices=False, compute_uv=True)
-        u_shape = mixed_shape(u)
-        v_shape = mixed_shape(v)
-
-        # reshape to (num x N x M)
-        u = K.reshape(u, (-1, u_shape[-2], u_shape[-1]))
-        v = K.reshape(v, (-1, v_shape[-2], v_shape[-1]))
-
-        out = K.batch_dot(u, K.permute_dimensions(v, [0, 2, 1]))
-
-        out = K.reshape(out, u_shape[:-1] + (v_shape[-2], ))
-
-        return out
+    shape of `mat`: (input_dim, mapping_dim) or (k, input_dim, mapping_dim)
+    """
+    # mat = tf.cast(mat, dtype="float")
+    matt = tf.transpose(mat)
+    tr = tf.linalg.trace(matt @ mat, name="trace")
+    normalized = tf.divide(mat, tf.math.sqrt(tr) + epsilon)
+    return normalized
 
 
-def trace_normalization(tensors, epsilon=K.epsilon()):
-    with K.name_scope('trace_normalization'):
-        constant = trace(tensors, keepdims=True)
+def nullspace_normalization(mat, data, threshold=0.01):
+    """'Subtract' the nullspace from the matrix. Used on
+    the :math:`\Omega` matrix in GMLVQ.
 
-        if epsilon != 0:
-            constant = K.maximum(constant, epsilon)
-
-        return tensors / constant
-
-
-def omega_normalization(tensors, epsilon=K.epsilon()):
-    with K.name_scope('omega_normalization'):
-        ndim = K.ndim(tensors)
-
-        # batch matrices
-        if ndim >= 3:
-            axes = ndim - 1
-            s_tensors = K.batch_dot(tensors, tensors, [axes, axes])
-        # non-batch
-        else:
-            s_tensors = K.dot(tensors, K.transpose(tensors))
-
-        t = trace(s_tensors, keepdims=True)
-        if epsilon == 0:
-            constant = K.sqrt(t)
-        else:
-            constant = K.sqrt(K.maximum(t, epsilon))
-
-        return tensors / constant
+    shape of `mat`: (input_dim, mapping_dim)
+    shape of `data`: (batch_size, input_dim)
+    """
+    C = tf.transpose(data) @ data
+    E, V = tf.linalg.eig(C)
+    E = tf.cast(E, dtype=mat.dtype)  # ignore the complex part
+    V = tf.cast(V, dtype=mat.dtype)  # ignore the complex part
+    V_sel = tf.transpose(V)[E < threshold]
+    M = tf.transpose(V_sel) @ V_sel
+    delta = tf.eye(mat.shape[1], dtype=mat.dtype) - M
+    normalized = mat @ tf.transpose(delta)
+    return normalized
