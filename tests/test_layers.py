@@ -7,6 +7,30 @@ import numpy as np
 from protoflow import layers
 
 
+class TestPrototypes(unittest.TestCase):
+    def setUp(self):
+        pass
+
+    def test_prototype_labels(self):
+        p = layers.Prototypes1D(nclasses=3, prototypes_per_class=1)
+        # yapf: disable
+        actual = p.prototype_labels.numpy()
+        desired = np.array([0, 1, 2])
+        # yapf: enable
+        self.assertIsNone(np.testing.assert_array_equal(actual, desired))
+
+    def test_prototype_labels_from_pdist(self):
+        p = layers.Prototypes1D(nclasses=3, prototype_distribution=[1, 2, 1])
+        # yapf: disable
+        actual = p.prototype_labels.numpy()
+        desired = np.array([0, 1, 1, 2])
+        # yapf: enable
+        self.assertIsNone(np.testing.assert_array_equal(actual, desired))
+
+    def tearDown(self):
+        pass
+
+
 class TestCompetitions(unittest.TestCase):
     def setUp(self):
         pass
@@ -53,7 +77,3 @@ class TestCompetitions(unittest.TestCase):
 
     def tearDown(self):
         pass
-
-
-if __name__ == '__main__':
-    unittest.main()
