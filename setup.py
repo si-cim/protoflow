@@ -8,14 +8,37 @@ PROJECT_URL = "https://github.com/si-cim/protoflow"
 DOWNLOAD_URL = "{}/releases/tag/v{}".format(PROJECT_URL, VERSION)
 
 with open("README.md", "r") as fh:
-    long_description = fh.read()
+    LONG_DESCRIPTION = fh.read()
+
+INSTALL_REQUIRES = [
+    "tensorflow>=2.3.1",
+    "scikit-learn>=0.23.2",
+    "matplotlib>=3.3.2",
+    "requests>=2.24.0",
+    "tqdm>=4.51.0",
+]
+DOCS = [
+    "recommonmark",
+    "sphinx",
+    "sphinx_rtd_theme",
+    "sphinxcontrib-katex",
+]
+GPU = ["tensorflow-gpu"]
+OTHERS = [
+    "xlrd",
+    "pandas",
+    "seaborn",
+    "imageio",
+]
+TESTS = ["pytest"]
+ALL = DOCS + OTHERS + TESTS
 
 setup(name="protoflow",
       version=VERSION,
       description="Highly extensible, GPU-supported "
       "Learning Vector Quantization (LVQ) toolbox "
       "built using Tensorflow 2.x and its Keras API.",
-      long_description=long_description,
+      long_description=LONG_DESCRIPTION,
       long_description_content_type="text/markdown",
       author="Jensun Ravichandran",
       author_email="jjensun@gmail.com",
@@ -30,20 +53,11 @@ setup(name="protoflow",
           "tqdm>=4.51.0",
       ],
       extras_require={
-          "docs": [
-              "recommonmark",
-              "sphinx",
-              "sphinx_rtd_theme",
-              "sphinxcontrib-katex",
-          ],
-          "gpu": ["tensorflow-gpu"],
-          "others": [
-              "xlrd",
-              "pandas",
-              "seaborn",
-              "imageio",
-          ],
-          "tests": ["pytest"],
+          "docs": DOCS,
+          "gpu": GPU,
+          "others": OTHERS,
+          "tests": TESTS,
+          "all": ALL,
       },
       classifiers=[
           "Development Status :: 3 - Alpha",

@@ -28,20 +28,21 @@ pip install -U protoflow
 ```
 To also install the extras, run
 ```bash
-pip install -U protoflow[docs,others,tests]
+pip install -U protoflow[all]
 ```
 To install the bleeding-edge features and improvements before they are release on PyPI, run
 ```bash
 git clone https://github.com/si-cim/protoflow.git
 git checkout dev
 cd protoflow
-pip install -e .[docs,others,tests]
+pip install -e .[all]
 ```
 
-For gpu support, run
+For gpu support, additionally run
 ```bash
 pip install -U protoflow[gpu]
 ```
+or install `tensorflow-gpu` manually.
 
 ## Documentation
 
