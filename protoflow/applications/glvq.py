@@ -12,6 +12,7 @@ class _GLVQ(Network):
     layer used by GLVQ-like models including GMLVQ and LVQMLN.
 
     """
+
     def compile(self,
                 loss=None,
                 squashing="sigmoid_beta",
@@ -59,6 +60,7 @@ class GLVQ(_GLVQ):
         prototype_initializer (str) : Method to use to set the initial
             prototype locations. (default: "mean")
     """
+
     def __init__(self,
                  nclasses,
                  input_dim,
@@ -66,6 +68,7 @@ class GLVQ(_GLVQ):
                  prototype_initializer="zeros",
                  trainable_prototypes=True,
                  prototypes_dtype="float32",
+                 prototype_constraint=None,
                  distance_fn=squared_euclidean_distance,
                  **kwargs):
         super().__init__(**kwargs)
@@ -75,6 +78,7 @@ class GLVQ(_GLVQ):
             prototypes_per_class=prototypes_per_class,
             prototype_initializer=prototype_initializer,
             trainable_prototypes=trainable_prototypes,
+            prototype_constraint=prototype_constraint,
             dtype=prototypes_dtype,
         )
         self.distance_fn = distance_fn

@@ -6,14 +6,18 @@ import tensorflow as tf
 
 from protoflow.modules import initializers
 
+from tensorflow.python.keras import constraints
+
 
 class _Prototypes(tf.keras.layers.Layer):
     """Base class for Prototype layers in ProtoFlow."""
+
     def __init__(self,
                  nclasses=None,
                  prototypes_per_class=1,
                  prototype_distribution=None,
-                 prototype_initializer='zeros',
+                 prototype_initializer="zeros",
+                 prototype_constraint=None,
                  trainable_prototypes=True,
                  **kwargs):
         if 'input_shape' not in kwargs and 'input_dim' in kwargs:
@@ -28,6 +32,7 @@ class _Prototypes(tf.keras.layers.Layer):
             assert self.nclasses == len(prototype_distribution)
             self.prototype_distribution = prototype_distribution
         self.prototype_initializer = initializers.get(prototype_initializer)
+        self.prototype_constraint = constraints.get(prototype_constraint)
         self.trainable_prototypes = trainable_prototypes
 
         # Make a label list and flatten the list of lists using itertools
@@ -55,6 +60,7 @@ class _Prototypes(tf.keras.layers.Layer):
 
 class Prototypes1D(_Prototypes):
     """Point Prototypes."""
+
     def build(self, input_shape):
         num_of_prototypes = sum(self.prototype_distribution)
         self.prototypes = self.add_weight(
@@ -62,6 +68,7 @@ class Prototypes1D(_Prototypes):
             shape=(num_of_prototypes, input_shape[-1]),
             dtype=self.dtype,
             initializer=self.prototype_initializer,
+            constraint=self.prototype_constraint,
             trainable=self.trainable_prototypes)
         super().build(input_shape)
 
@@ -77,6 +84,7 @@ class AppendPrototypes1D(Prototypes1D):
 
     `shape_transformation`: Callable that is to be applied to get a matrix.
     """
+
     def __init__(self, shape_transformation=None, **kwargs):
         self.shape_transformation = shape_transformation or tf.identity
         super().__init__(**kwargs)
