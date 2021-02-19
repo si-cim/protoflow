@@ -27,6 +27,7 @@ GPU = ["tensorflow-gpu"]
 OTHERS = [
     "xlrd",
     "pandas",
+    "pydot",
     "seaborn",
     "imageio",
 ]
@@ -45,13 +46,7 @@ setup(name="protoflow",
       url=PROJECT_URL,
       download_url=DOWNLOAD_URL,
       license="MIT",
-      install_requires=[
-          "tensorflow>=2.3.1",
-          "scikit-learn>=0.23.2",
-          "matplotlib>=3.3.2",
-          "requests>=2.24.0",
-          "tqdm>=4.51.0",
-      ],
+      install_requires=INSTALL_REQUIRES,
       extras_require={
           "docs": DOCS,
           "gpu": GPU,

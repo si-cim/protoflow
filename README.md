@@ -30,6 +30,11 @@ To also install the extras, run
 ```bash
 pip install -U protoflow[all]
 ```
+
+*Note: If you're using [ZSH](https://www.zsh.org/), the square brackets `[ ]`
+have to be escaped like so: `\[\]`, making the install command `pip install -U
+prototorch\[all\]`.*
+
 To install the bleeding-edge features and improvements before they are release on PyPI, run
 ```bash
 git clone https://github.com/si-cim/protoflow.git
@@ -42,7 +47,7 @@ For gpu support, additionally run
 ```bash
 pip install -U protoflow[gpu]
 ```
-or install `tensorflow-gpu` manually.
+or simply install `tensorflow-gpu` manually.
 
 ## Documentation
 

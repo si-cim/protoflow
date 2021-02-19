@@ -80,7 +80,7 @@ class StratifiedMean(_ProtoInit):
         for label, num in zip(self.unique_labels, self.prototype_distribution):
             x_label = self.x_train[self.y_train == label]
             x_label_mean = np.mean(x_label, axis=0)
-            x_label_mean = x_label_mean.reshape(1, self.x_train.shape[1])
+            x_label_mean = x_label_mean.reshape(1, np.prod(self.x_train.shape[1:]))
             for _ in range(num):
                 self.prototypes = np.append(self.prototypes,
                                             x_label_mean,
@@ -88,7 +88,9 @@ class StratifiedMean(_ProtoInit):
             self.prototype_labels = np.append(self.prototype_labels,
                                               [label] * num)
         self.validate(shape=shape)
-        return self.prototypes, self.prototype_labels
+        random_offset = self.epsilon * np.random.choice(
+            [-1, 1], size=self.prototypes.shape)
+        return self.prototypes + random_offset, self.prototype_labels
 
 
 class StratifiedRandom(_ProtoInit):

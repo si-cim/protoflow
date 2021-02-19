@@ -6,8 +6,8 @@ import tensorflow as tf
 def squared_euclidean_distance(x, y):
     """Compute the squared Euclidean distance between :math:`x` and :math:`y`.
 
-    Expected dimension of x is 2.
-    Expected dimension of y is 2.
+    Expected dimension of x is 2 (batch_dim, input_dim).
+    Expected dimension of y is 2 (nprotos, input_dim).
     """
     expanded_x = tf.expand_dims(x, axis=1)
     batchwise_difference = tf.subtract(y, expanded_x)
@@ -19,8 +19,8 @@ def squared_euclidean_distance(x, y):
 def euclidean_distance(x, y):
     """Compute the Euclidean distance between :math:`x` and :math:`y`.
 
-    Expected dimension of x is 2.
-    Expected dimension of y is 2.
+    Expected dimension of x is 2 (batch_dim, input_dim).
+    Expected dimension of y is 2 (nprotos, input_dim).
     """
     distances_raised = squared_euclidean_distance(x, y)
     distances = tf.math.pow(distances_raised, 1.0 / 2.0)
@@ -30,8 +30,8 @@ def euclidean_distance(x, y):
 def lpnorm_distance(x, y, p):
     """Compute :math:`{\\langle x, y \\rangle}_p`.
 
-    Expected dimension of x is 2.
-    Expected dimension of y is 2.
+    Expected dimension of x is 2 (batch_dim, input_dim).
+    Expected dimension of y is 2 (nprotos, input_dim).
     """
     expanded_x = tf.expand_dims(x, axis=1)
     batchwise_difference = tf.subtract(y, expanded_x)
@@ -46,9 +46,9 @@ def omega_distance(x, y, omega):
 
     Compute :math:`{\\langle \\Omega x, \\Omega y \\rangle}_p`
 
-    Expected dimension of x is 2.
-    Expected dimension of y is 2.
-    Expected dimension of omega is 2.
+    Expected dimension of x is 2 (batch_dim, input_dim).
+    Expected dimension of y is 2 (nprotos, input_dim).
+    Expected dimension of omega is 2 (input_dim, mapping_dim).
     """
     projected_x = x @ omega
     projected_y = y @ omega
@@ -61,9 +61,9 @@ def lomega_distance(x, y, omegas):
 
     Compute :math:`{\\langle \\Omega_k x, \\Omega_k y_k \\rangle}_p`
 
-    Expected dimension of x is 2.
-    Expected dimension of y is 2.
-    Expected dimension of omegas is 3.
+    Expected dimension of x is 2 (batch_dim, input_dim).
+    Expected dimension of y is 2 (nprotos, input_dim).
+    Expected dimension of omegas is 3 (nprotos, input_dim, mapping_dim).
     """
     projected_x = x @ omegas
     projected_y = tf.keras.backend.batch_dot(y, omegas)
