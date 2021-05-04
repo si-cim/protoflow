@@ -38,8 +38,8 @@ prototorch\[all\]`.*
 To install the bleeding-edge features and improvements before they are release on PyPI, run
 ```bash
 git clone https://github.com/si-cim/protoflow.git
-git checkout dev
 cd protoflow
+git checkout dev
 pip install -e .[all]
 ```
 
