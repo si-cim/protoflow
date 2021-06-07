@@ -11,7 +11,8 @@
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/protoflow?color=blue)
 [![GitHub license](https://img.shields.io/github/license/si-cim/protoflow)](https://github.com/si-cim/protoflow/blob/master/LICENSE)
 
-*PyTorch users, please see:* [ProtoTorch](https://github.com/si-cim/prototorch)
+**This project is no longer actively maintained**. Please consider using
+[ProtoTorch](https://github.com/si-cim/prototorch) instead.
 
 ## Description
 
