@@ -1,7 +1,5 @@
 """ProtoFlow Prototype layers."""
 
-import itertools
-
 import tensorflow as tf
 
 from protoflow.modules import initializers
@@ -10,14 +8,16 @@ from protoflow.modules import initializers
 class _Prototypes(tf.keras.layers.Layer):
     """Base class for Prototype layers in ProtoFlow."""
     def __init__(self,
-                 nclasses=None,
+                 nclasses,
                  prototypes_per_class=1,
                  prototype_distribution=None,
-                 prototype_initializer='zeros',
+                 prototype_initializer="zeros",
+                 prototype_constraint=None,
                  trainable_prototypes=True,
+                 output_plabels=False,
                  **kwargs):
-        if 'input_shape' not in kwargs and 'input_dim' in kwargs:
-            kwargs['input_shape'] = [kwargs.pop('input_dim')]
+        if "input_shape" not in kwargs and "input_dim" in kwargs:
+            kwargs["input_shape"] = [kwargs.pop("input_dim")]
         super().__init__(**kwargs)
 
         self.nclasses = nclasses
@@ -28,27 +28,27 @@ class _Prototypes(tf.keras.layers.Layer):
             assert self.nclasses == len(prototype_distribution)
             self.prototype_distribution = prototype_distribution
         self.prototype_initializer = initializers.get(prototype_initializer)
+        self.prototype_constraint = prototype_constraint
         self.trainable_prototypes = trainable_prototypes
+        self.output_plabels = output_plabels
 
-        # Make a label list and flatten the list of lists using itertools
-        pdist = self.prototype_distribution
-        label_list = [[i] * n for i, n in zip(range(len(pdist)), pdist)]
-        plabels = list(itertools.chain(*label_list))
+        # Make a list of prototype labels
+        plabels = []
+        for label, nprotos in enumerate(self.prototype_distribution):
+            plabels.extend([label] * nprotos)
 
         self.prototypes = None
-        # self.prototype_labels = tf.Variable(initial_value=plabels,
-        #                                     dtype=self.dtype,
-        #                                     trainable=False)
         self.prototype_labels = tf.constant(value=plabels, dtype=self.dtype)
 
     def get_config(self):
-        """Save everything you need to rebuild an identical Python object."""
+        """Everything needed to rebuild an identical Python object."""
         base_config = super().get_config()
         config = {
-            'nclasses': self.nclasses,
-            'prototypes_per_class': self.prototypes_per_class,
-            'prototype_distribution': self.prototype_distribution,
-            'trainable_prototypes': self.trainable_prototypes,
+            "nclasses": self.nclasses,
+            "prototypes_per_class": self.prototypes_per_class,
+            "prototype_distribution": self.prototype_distribution,
+            "trainable_prototypes": self.trainable_prototypes,
+            "output_plabels": self.output_plabels,
         }
         return {**base_config, **config}
 
@@ -58,15 +58,19 @@ class Prototypes1D(_Prototypes):
     def build(self, input_shape):
         num_of_prototypes = sum(self.prototype_distribution)
         self.prototypes = self.add_weight(
-            name='prototypes',
+            name="prototypes",
             shape=(num_of_prototypes, input_shape[-1]),
             dtype=self.dtype,
             initializer=self.prototype_initializer,
+            constraint=self.prototype_constraint,
             trainable=self.trainable_prototypes)
         super().build(input_shape)
 
     def call(self, inputs):
-        return self.prototypes
+        if self.output_plabels:
+            return self.prototypes, self.prototype_labels
+        else:
+            return self.prototypes
 
 
 class AppendPrototypes1D(Prototypes1D):

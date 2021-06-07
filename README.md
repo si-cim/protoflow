@@ -11,7 +11,8 @@
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/protoflow?color=blue)
 [![GitHub license](https://img.shields.io/github/license/si-cim/protoflow)](https://github.com/si-cim/protoflow/blob/master/LICENSE)
 
-*PyTorch users, please see:* [ProtoTorch](https://github.com/si-cim/prototorch)
+**This project is no longer actively maintained**. Please consider using
+[ProtoTorch](https://github.com/si-cim/prototorch) instead.
 
 ## Description
 
@@ -28,20 +29,26 @@ pip install -U protoflow
 ```
 To also install the extras, run
 ```bash
-pip install -U protoflow[docs,others,tests]
+pip install -U protoflow[all]
 ```
+
+*Note: If you're using [ZSH](https://www.zsh.org/), the square brackets `[ ]`
+have to be escaped like so: `\[\]`, making the install command `pip install -U
+prototorch\[all\]`.*
+
 To install the bleeding-edge features and improvements before they are release on PyPI, run
 ```bash
 git clone https://github.com/si-cim/protoflow.git
-git checkout dev
 cd protoflow
-pip install -e .[docs,others,tests]
+git checkout dev
+pip install -e .[all]
 ```
 
-For gpu support, run
+For gpu support, additionally run
 ```bash
 pip install -U protoflow[gpu]
 ```
+or simply install `tensorflow-gpu` manually.
 
 ## Documentation
 
